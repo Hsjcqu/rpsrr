@@ -9,7 +9,7 @@ This repository contains the R code used for the simulation and application in t
 This folder includes the R scripts used in the simulation studies discussed in the thesis. The folder is structured as follows:
 
 *   **function8.R**:\
-    Contains the primary functions used in the simulations described in the thesis.
+    Contains the primary functions used in the simulations described in the paper.
 
 *   **simulationforMm.R**:\
     Code for the simulation presented in Section 4.1, "*The Effect of The Selection of m*."
@@ -28,7 +28,7 @@ This folder includes the R scripts used in the simulation studies discussed in t
 
 ### 2. R Code for Real Data
 
-This folder includes the R scripts used in the empirical analysis section of the thesis.
+This folder includes the R scripts used in the empirical analysis section of the paper.
 
 ## How to Use
 
