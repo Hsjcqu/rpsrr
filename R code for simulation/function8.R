@@ -1,7 +1,5 @@
-#######The file provides the codes of main functions
-
 rm(list=ls())
-setwd("E:\\HS\\OSRR\\code")
+setwd("E:\\DSF\\R")
 
 library(doParallel)
 library(mvtnorm)
@@ -9,8 +7,7 @@ library(ggpubr)
 library(quantreg)
 library(lava)
 
-#####generate the random sample
-####beta is the parameter, N is the size of sample,Xtype is the type of distribution of X,etype is the type of distribution of error 
+###generate the random number
 generate <- function(beta,N,Xtype,etype){
   p <- length(beta)
   mean <- rep(0,p)
@@ -47,7 +44,7 @@ generate <- function(beta,N,Xtype,etype){
 }
 
 ### Weighted rank regression estimation 
-##y is an n*1 column vector, X is an n*p matrix, and w represents the stochastic weights are an n*1 column vector.
+##equivalent to LAD
 Wrfit <- function(y, x, w) {
   n <- nrow(x)
   p <- ncol(x)
@@ -69,8 +66,7 @@ Wrfit <- function(y, x, w) {
 }
 
 
-#### random perturbation subsampling with product weights
-###u and v are the stochastic weights, modeltype = 'R' means rank regression and 'L' means linear regression
+#### 随机扰动子抽样
 persample <- function(y, x, u, v, modeltype) {
   N <- length(y)
   p <- ncol(x)
@@ -97,7 +93,7 @@ MSE <- function(x, y) {
 }
 
 
-###estimation of subsampling for linear model
+### 线性模型子抽样估计
 linearsample <- function(y, x, prob) {
   yp <- diag(1/sqrt(prob)) %*% y
   xp <- diag(1/sqrt(prob)) %*% x
@@ -105,13 +101,13 @@ linearsample <- function(y, x, prob) {
   return(beta)
 }
 
-###vector norm
+## 向量范数
 mynorm <- function(x){
   norma <- sqrt(x%*%x)
   return(norma)
 }
 
-###Calculate the norm for each row of the matrix
+##矩阵每行的范数
 norm_x <- function(x){
   nm <- apply(x, 1, mynorm)
   return(nm)
@@ -148,12 +144,10 @@ optsample <- function(y, x, r, method) {
   return(beta)
 }
 
-####perturbation subsampling with additive weights
-### y_diff = y_i-y_j, X_diff = X_i - X_j
 sumwrfit <- function(n,p,y_diff, X_diff, m, r,method) {
   q <- r/n
   betas <- matrix(0, nrow = p, ncol = m)
- 
+  
   for (l in 1:m) {
     # Subset
     u <- rbinom(n, 1, q)
@@ -194,7 +188,6 @@ sumwrfit <- function(n,p,y_diff, X_diff, m, r,method) {
   return(beta_est)
 }
 
-####another function of perturbation subsampling with product weights
 mulwrfit <- function(n,p,y_diff, X_diff, m, r,method) {
   q <- r/n
   betas <- matrix(0, nrow = p, ncol = m)
@@ -264,7 +257,6 @@ mulwrfit2 <- function(n,p,y, x, m, r) {
   return(beta_est)
 }
 
-
 # Helper function to compute differences
 compute_yij <- function(y) {
   y <- as.matrix(y)
@@ -332,5 +324,81 @@ compute_wij2 <- function(u, v) {
   }
   return(wij)
 }
+compute_wijm <- function(u, v) {
+  w <- u * v
+  N <- length(w)
+  wij <- numeric(N * (N - 1) / 2)
+  
+  idx <- 1
+  for (i in 1:(N - 1)) {
+    for (j in (i + 1):N) {
+      wij[idx] <- w[i]*w[j]
+      idx <- idx + 1
+    }
+  }
+  
+  return(wij)
+}
 
+sumtime <- function(n, p, y_diff, X_diff, r) {
+  q <- r / n
+  starttime <- proc.time()
+  
+  # Subset
+  u <- rbinom(n, 1, q)
+  v <- rpois(n, 1 / q)
+  
+  # Weights
+  W <- u * v
+  W_diff <- compute_wij1(u, v)
+  
+  # Filter non-zero weights
+  non_zero_idx <- which(W_diff != 0)
+  y_per <- y_diff[non_zero_idx]
+  X_per <- X_diff[non_zero_idx, ]
+  W_per <- W_diff[non_zero_idx]
+  
+  # Weighted objective function
+  yw <- W_per * y_per
+  xw <- sweep(X_per, 1, W_per, "*")
+  
+  # Estimation
+  betA <- quantreg::rq(yw ~ 0 + xw, method = "fnb", tau = 0.5)$coefficients
+  
+  endtime <- proc.time()
+  timeM <- endtime[1] - starttime[1] 
+  
+  return(timeM)
+}
 
+multime <- function(n,p,y_diff, X_diff, r) {
+  q <- r/n
+  starttime <- proc.time()
+  
+  # Subset
+  u <- rbinom(n, 1, q)
+  v <- rpois(n, 1/q)
+  
+  # Weights
+  W <- u * v
+  W_diff <- compute_wij2(u, v)
+  
+  # Filter non-zero weights
+  non_zero_idx <- which(W_diff != 0)
+  y_per <- y_diff[non_zero_idx]
+  X_per <- X_diff[non_zero_idx, ]
+  W_per <- W_diff[non_zero_idx]
+  
+  # Weighted objective function
+  yw <- W_per * y_per
+  xw <- sweep(X_per, 1, W_per, "*")
+  
+  # Estimation
+  betA <- quantreg::rq(yw ~ 0 + xw, method = "fnb", tau = 0.5)$coefficients
+  
+  endtime <- proc.time()
+  timeM <- endtime[1] - starttime[1] 
+  
+  
+  return(timeM)
+}
