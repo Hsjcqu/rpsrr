@@ -339,7 +339,7 @@ compute_wijm <- function(u, v) {
   
   return(wij)
 }
-
+### time
 sumtime <- function(n, p, y_diff, X_diff, r) {
   q <- r / n
   starttime <- proc.time()
