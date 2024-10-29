@@ -1,54 +1,26 @@
-# README
+# Random Perturbation Subsampling for Rank Regression with Massive Data
 
-This repository contains the R code used for the simulation and application in the paper *"Random Perturbation Subsampling for Rank Regression with Massive Data"*. The code is organized into two main directories: one for simulation studies and one for application.
+This repository contains the code used for the simulation and empirical studies presented in the paper *"Random Perturbation Subsampling for Rank Regression with Massive Data."*
 
-## Repository Structure
+## Structure
 
-### 1. R Code for Simulation
+### 1. Simulation Code (`simulation code for rpsrr`)
 
-This folder includes the R scripts used in the simulation studies discussed in the thesis. The folder is structured as follows:
+The folder `simulation code for rpsrr` contains all the code for the simulations in the paper. It includes three subfolders corresponding to the simulation steps in the paper:
 
-*   **function8.R**:\
-    Contains the primary functions used in the simulations described in the paper.
+- **1 selection of m**: Code related to the selection of \(m\) in Section 4.1.
+- **2 effect of stochastic weights and r**: Code for the effect of stochastic weights and subsample size \(r\) in Section 4.2.
+- **3 comparison of subsampling methods**: Code for comparing different subsampling methods in Section 4.3.
 
-*   **simulationforMm.R**:\
-    Code for the simulation presented in Section 4.1, "*The Effect of The Selection of m*."
+### 2. Empirical Code (`real data code for dmap`)
 
-*   **simulationforv.R**:\
-    Code for the simulation presented in Section 4.2, "*The Effect of Stochastic Weights and Subsample Size r*."
+The folder `real data code for dmap` contains the code for the empirical analysis, organized into two subfolders:
 
-*   **Comparison/**:\
-    Contains scripts for simulations in Section 4.3, "*Comparison with Several Existing Subsampling Methods*," including:
+- **MSPEs**: Code for calculating the Mean Squared Prediction Errors (MSPEs), corresponding to the empirical results in Figure 5.
+- **PEs**: Code for calculating the Prediction Errors (PEs), corresponding to the empirical results in Figure 6.
 
-    *   **simulation11-13.R**: Simulates Algorithm 2 under Cases 1-3.
+Additionally, the empirical data file is named `F.csv`, which supports the analysis results.
 
-    *   **simulationforA.R**: Simulates Algorithm 4 under Cases 1-3.
+## Usage
 
-    *   **simulationfortime.R**: Calculates CPU time for the proposed algorithm.
-
-### 2. R Code for Real Data
-
-This folder includes the R scripts used in the empirical analysis section of the paper.
-
-## How to Use
-
-### Prerequisites
-
-*   Ensure that R is installed on your machine.
-
-*   Additional R packages may be required based on the specific scripts. Refer to the comments within each script for any package dependencies.
-
-### Running Simulations
-
-1.  Navigate to the `R code for simulation` folder.
-
-2.  To replicate results from Section 4.1, execute the `simulationforMm.R` script.
-
-3.  Similarly, run other scripts for their corresponding sections.
-
-### Application (Real Data Analysis)
-
-1.  Navigate to the `R code for real data` folder.
-
-2.  Run the provided scripts to replicate the empirical analysis.
-
+Each folder contains code and related data files for reproducing the results presented in the paper. Please refer to the specific folder corresponding to the simulation or empirical analysis you are interested in.
